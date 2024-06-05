@@ -1,5 +1,10 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Driver {
-	public static void main(String [] args) {
+	public static void main(String [] args) throws IOException {
 		Polynomial p = new Polynomial();
 		System.out.println(p.evaluate(3));
 		double [] c1 = {6,5};
@@ -21,5 +26,12 @@ public class Driver {
 		for(int i = 0; i < t.coefficients.length; i++) {
 			System.out.print(t.coefficients[i] + "x ^ " + t.exponents[i] + " + ");
 		}
+		File new_file = new File("C:\\\\Users\\\\onlyf\\\\b07lab1\\\\text.txt");
+		Polynomial file_info = new Polynomial(new_file);
+		System.out.println("---------------");
+		for(int i = 0; i < file_info.coefficients.length; i++) {
+			System.out.print(file_info.coefficients[i] + "x ^ " + file_info.exponents[i] + " + ");
+		}
+		
 	}
 }

@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class Polynomial {
 	
@@ -10,8 +11,8 @@ public class Polynomial {
 	
 	//method
 	public Polynomial() {
-		coefficients = new double[0];
-		exponents = new int[0];
+		coefficients = null;
+		exponents = null;
 	}
 	
 	public Polynomial(double [] values, int [] expos) {
@@ -37,18 +38,62 @@ public class Polynomial {
 			exponents[i] = expos[i];
 		}
 	}
-	/*
-	public Polynomial(File theFile) {
+	
+	public Polynomial(File theFile) throws IOException {
 		BufferedReader input = new BufferedReader(new FileReader(theFile));
 		String line = input.readLine();
-		String [] terms = line.split("+", 0);
+		String [] terms = line.split("[+x]");
+		String [] finalArr = line.split("[+x-]");
+		int len = 0;
+		int negs = 0;
 		for(int i = 0; i < terms.length; i ++) {
-			String
+			if(terms[i].indexOf('-') == 0) {
+				finalArr[i + negs] = "-" + finalArr[i + negs];
+				negs ++;
+			}
+			if(terms[i].indexOf('-',0) != -1) {
+				finalArr[i + negs + 1] = "-" + finalArr[i + negs + 1];
+				negs ++;
+			}
+			//do a get index of "-" for each part of array
 		}
-		
-	}*/
+		if(finalArr.length % 2 == 0) {
+			coefficients = new double[finalArr.length / 2];
+			exponents = new int[finalArr.length / 2];
+		}
+		else{
+			coefficients = new double[(int)Math.ceil(finalArr.length / 2.0)];
+			exponents = new int[(int)Math.ceil(finalArr.length / 2.0)];
+		}
+		int t = 0;
+		for(int i = 0; i < finalArr.length; i ++) {
+			if(finalArr[i].indexOf('.') != -1) {
+				if(i == coefficients.length - 1) {
+					exponents[t] = 0; 
+				}
+				else if(finalArr[i + 1].indexOf('.') != -1) {
+					exponents[t] = 0;
+				}
+				else {
+					exponents[t] = Integer.parseInt(finalArr[i + 1]);
+				}
+				coefficients[t] = Double.parseDouble(finalArr[i]);
+				t ++;
+			}
+			
+		}
+	}
 	
 	public Polynomial add(Polynomial arg) {
+		if(this.exponents == null && arg.exponents == null) {
+			return null;
+		}
+		if(this.exponents == null) {
+			return this;
+		}
+		if(arg.exponents == null) {
+			return arg;
+		}
 		int same = 0;
 		for(int i = 0; i < this.exponents.length; i ++) {
 			for(int p = 0; p < arg.exponents.length; p ++) {
@@ -84,6 +129,9 @@ public class Polynomial {
 	}
 	
 	public double evaluate(double xVal) {
+		if(exponents == null) {
+			return 0.0;
+		}
 		double sum = 0;
 		for(int i = 0; i < coefficients.length; i ++) {
 			double product = 1;
@@ -114,7 +162,9 @@ public class Polynomial {
 		
 	}
 	public Polynomial multiply(Polynomial arg) {
-		Polynomial product = new Polynomial();
+		double [] c = new double[0];
+		int [] e = new int[0];
+		Polynomial product = new Polynomial(c, e);
 		for(int i = 0; i < arg.coefficients.length; i ++) {
 			product = product.add(single_multiply(this.coefficients, this.exponents, arg.coefficients[i], arg.exponents[i]));
 		}	
